@@ -1,15 +1,11 @@
-import {Router} from "express";
 
-export async function ArticleApi(mongoDatabase, sockets) {
+export async function ArticleWebSocket(mongoDatabase, recipient) {
 
-    await initMongo({})
+    console.log(recipient.url)
 
-
-    async function initMongo(query) {
-        if ({query}) {
             const articles = await mongoDatabase
                 .collection("articles")
-                .find(query)
+                .find({})
                 .sort({metacritic: -1})
                 .map(({title, date, content, category, name}) => ({
                     title,
@@ -21,11 +17,8 @@ export async function ArticleApi(mongoDatabase, sockets) {
                 .limit(100)
                 .toArray();
 
-            for (const recipient of sockets) {
-                articles.forEach((article) => {
-                    recipient.send(JSON.stringify(article));
-                })
-            }
-        }
-    }
+            articles.forEach((article) => {
+                recipient.send(JSON.stringify(article));
+            })
 }
+

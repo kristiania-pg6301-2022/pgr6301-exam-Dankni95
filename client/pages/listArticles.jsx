@@ -1,11 +1,11 @@
 import React, {useContext, useState, useEffect} from "react";
-import {useLoading} from "../useLoading";
 import {ArticlesApiContext} from "../articlesApiContext.jsx";
 import {useNavigate} from "react-router-dom";
-
+import {useLoading} from "../useLoading";
 
 export async function handleClick(article, deleteArticle) {
     await deleteArticle(article)
+    useNavigate()
 }
 
 
@@ -19,37 +19,34 @@ function Article({article: {title, date, category, content, name}, user}) {
             <h6>{date}</h6>
             {user?.google || user?.openid ? <h4>{content}</h4> : "Sign in to read the article"}
             <h6>By: {name}</h6>
-            {user.openid && user?.openid?.name === name ? <button onClick={(event) => handleClick( {del: title}, deleteArticle)}>Edit</button> : ""}
+            {user.openid && user?.openid?.name === name ?
+                <button onClick={(event) => handleClick({del: title}, deleteArticle)}>Edit</button> : ""}
         </div>
     );
 }
 
 
 export function ListArticles({user}) {
-    const {listArticles} = useContext(ArticlesApiContext);
     const [category, setCategory] = useState("");
     const [categoryQuery, setCategoryQuery] = useState("");
-    const {loading, error, data} = useLoading(
-        async () => await listArticles({category: category}),
-        [category]
-    );
+
 
     function handleSubmitQuery(e) {
         e.preventDefault();
         setCategory(categoryQuery);
     }
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-    if (error) {
-        return (
-            <div>
-                <h1>Error</h1>
-                <div id="error-text">{error.toString()}</div>
-            </div>
-        );
-    }
+    const [articles, setArticles] = useState("");
+    useEffect(() => {
+        const ws = new WebSocket(window.location.origin.replace(/^http/, "ws") + "/");
+        ws.onmessage = (event) => {
+            const {name, title, content, date, category} = JSON.parse(event.data);
+            setArticles((articles) => [...articles, {name, title, content, date, category}]);
+        };
+    }, []);
+
+
+
 
     return (
         <div>
@@ -72,8 +69,8 @@ export function ListArticles({user}) {
                     </label>
                 </form>
             </div>
-            {data.map((article) => (
-                <Article key={article.title} article={article} user={user} />
+            {Object.keys(articles).map((keyName, i) => (
+                <Article key={articles[keyName].title} article={articles[keyName]} user={user}/>
             ))}
         </div>
     );
