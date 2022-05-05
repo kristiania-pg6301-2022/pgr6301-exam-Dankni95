@@ -38,7 +38,7 @@ export function ListArticles({user}) {
 
     const [articles, setArticles] = useState("");
     useEffect(() => {
-        const ws = new WebSocket(window.location.origin.replace(/^http/, "ws") + "/");
+        const ws = new WebSocket(window.location.origin.replace(/^http/, "ws"));
         ws.onmessage = (event) => {
             const {name, title, content, date, category} = JSON.parse(event.data);
             setArticles((articles) => [...articles, {name, title, content, date, category}]);

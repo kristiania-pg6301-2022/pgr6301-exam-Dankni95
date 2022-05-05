@@ -22,7 +22,7 @@ const sockets = [];
 
 wsServer.on("connect", (socket) => {
     sockets.push(socket);
-    
+
     const mongoClient = new MongoClient(process.env.MONGODB_URL)
     setTimeout(() => {
         mongoClient.connect().then(async () => {
@@ -33,12 +33,15 @@ wsServer.on("connect", (socket) => {
         })
     }, 1000);
 
-    socket.on("message", (data) => {
-        const items = JSON.parse(data);
-        console.log("Sending message to all")
-        for (const recipient of sockets) {
-            recipient.send(items);
-        }
+    socket.on('message', function incoming(message) {
+        
+        const items = JSON.parse(message);
+
+        // Send To Everyone Except Sender
+        wsServer.clients.forEach(function (client) {
+            if (client !== socket) client.send(items);
+        });
+
     });
 });
 
@@ -46,7 +49,7 @@ const mongoClient = new MongoClient(process.env.MONGODB_URL)
 mongoClient.connect().then(async () => {
     app.use(
         "/api/articles",
-        ArticlesApi(mongoClient.db(process.env.MONGODB_DATABASE || "pg6301-7")))
+        ArticlesApi(mongoClient.db(process.env.MONGODB_DATABASE || "pg6301-7"), sockets))
 })
 
 
