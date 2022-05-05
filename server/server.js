@@ -38,7 +38,7 @@ wsServer.on("connect", (socket) => {
 
 
             mongoClient.connect().then(async () => {
-                const articles = await ArticleWebSocket(mongoClient.db(process.env.MONGODB_DATABASE), socket, items)
+                const articles = await ArticleWebSocket(mongoClient.db(process.env.MONGODB_DATABASE || "articles_db"), socket, items)
                 console.log(articles)
                 wsServer.clients.forEach(function (client) {
                     if (client === socket) client.send(JSON.stringify(articles));
@@ -46,14 +46,14 @@ wsServer.on("connect", (socket) => {
             })
         }else if (items?.title !== null && items.title !== undefined ){
             mongoClient.connect().then(async () => {
-                const articles = await ArticleWebSocket(mongoClient.db(process.env.MONGODB_DATABASE), socket, items)
+                const articles = await ArticleWebSocket(mongoClient.db(process.env.MONGODB_DATABASE || "articles_db"), socket, items)
                 wsServer.clients.forEach(function (client) {
                     client.send(JSON.stringify(articles));
                 });
             })
         }else if(items?.deleteArticle !== null && items.deleteArticle !== undefined ){
             mongoClient.connect().then(async () => {
-                const articles = await ArticleWebSocket(mongoClient.db(process.env.MONGODB_DATABASE), socket, items)
+                const articles = await ArticleWebSocket(mongoClient.db(process.env.MONGODB_DATABASE || "articles_db"), socket, items)
                 wsServer.clients.forEach(function (client) {
                     client.send(JSON.stringify(articles));
                 });
@@ -84,7 +84,7 @@ mongoClient.connect().then(async () => {
     console.log("connected")
     app.use(
         "/api/articles",
-        ArticlesApi(mongoClient.db(process.env.MONGODB_DATABASE || "pg6301-7"), sockets))
+        ArticlesApi(mongoClient.db(process.env.MONGODB_DATABASE || "articles_db"), sockets))
 
 })
 
