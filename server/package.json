@@ -18,8 +18,8 @@
     "babel-jest": "^27.5.1",
     "jest": "^27.5.1",
     "nodemon": "^2.0.15",
-    "ws": "^8.5.0",
-    "supertest": "^6.2.2"
+    "supertest": "^6.2.2",
+    "ws": "8.5.0"
   },
   "dependencies": {
     "body-parser": "^1.19.2",
