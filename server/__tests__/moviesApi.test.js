@@ -1,7 +1,7 @@
 import request from "supertest"
 import express from "express"
 import { MongoClient } from "mongodb"
-import { ArticleApi } from "../articleApi.js"
+import { ArticleWebSocket } from "../articleWebSocket.js"
 import dotenv from "dotenv"
 import bodyParser from "body-parser"
 
@@ -15,7 +15,7 @@ beforeAll(async () => {
   await mongoClient.connect()
   const database = mongoClient.db("test_database")
   await database.collection("movies").deleteMany({})
-  app.use("/api/movies", ArticleApi(database))
+  app.use("/api/movies", ArticleWebSocket(database))
 })
 afterAll(() => {
   mongoClient.close()

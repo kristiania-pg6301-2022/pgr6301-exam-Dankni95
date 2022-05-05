@@ -8,10 +8,9 @@ export function FrontPage({user}) {
 
     return (
         <>
-            <div className="left-side"><Sidebar></Sidebar></div>
-            <main className="main"><ListArticles user={user}/></main>
-            <div className="right-side section yellow">Right Sidebar</div>
-            <footer className="section coral">Footer</footer>
+            <div className="left-side"><Sidebar/></div>
+            <main className="main"><ListArticles user={user} /></main>
+            <footer className="section coral">© 2022 Kristiania Avis</footer>
         </>
     )
 }

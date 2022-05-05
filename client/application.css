@@ -2,37 +2,38 @@
 .parent {
   display: grid;
   grid-template: auto 1fr auto / auto 1fr auto;
+  grid-gap: 1rem;
+
 }
 
 header {
-  padding: 2rem;
   grid-column: 1 / 4;
 }
 
 .left-side {
-  grid-column: 1 / 2;
-  background-color: red;
+  grid-column: 1 / 1;
+  background-color: paleturquoise;
 }
 
 main {
-  grid-column: 1 / 4;
+  grid-column: 2 / 4;
   text-align: center;
+  background-color: paleturquoise;
+  padding-right: 10rem;
 }
 
 
 footer {
   grid-column: 1 / 4;
+  background-color: paleturquoise;
+  text-align: center;
 }
 
-.right-side{
-  grid-column: 3 / 4;
-  background-color: rebeccapurple;
 
-}
 
 header {
   background-color: aliceblue;
-  padding: 0.5em 1em;
+  padding: 0.0em 1em;
   display: flex;
   justify-content: space-between;
 }

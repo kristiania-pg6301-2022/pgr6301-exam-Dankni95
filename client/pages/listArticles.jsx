@@ -1,59 +1,85 @@
 import React, {useContext, useState, useEffect} from "react";
-import {useLoading} from "../useLoading";
-import {ArticlesApiContext} from "../articlesApiContext.jsx";
-import {useNavigate} from "react-router-dom";
 
 
-export async function handleClick(article, deleteArticle) {
-    await deleteArticle(article)
-}
+function Article({article: {title, date, category, content, name}, user, ws}) {
+    const [newTitle, setTitle] = useState("");
 
 
-function Article({article: {title, date, category, content, name}, user}) {
-    const {deleteArticle} = useContext(ArticlesApiContext)
+
+    function handleInputChange(e) {
+        e.preventDefault();
+        setTitle(e.target.value)
+    }
+
+    async function saveClick(title) {
+              ws.send(JSON.stringify({title: title, newTitle: newTitle}))
+    }
+
+    function deleteClick(title) {
+            ws.send(JSON.stringify({deleteArticle: title}))
+    }
 
     return (
         <div>
             <h6>{category}</h6>
-            <h1>{"title" + title}</h1>
+            <div>{user.openid && user?.openid?.name === name ?
+                <input type='text' onChange={(e) => {
+                    handleInputChange(e)
+                }} defaultValue={title}/> : <h1>{title}</h1>}
+            </div>
             <h6>{date}</h6>
             {user?.google || user?.openid ? <h4>{content}</h4> : "Sign in to read the article"}
             <h6>By: {name}</h6>
-            {user.openid && user?.openid?.name === name ? <button onClick={(event) => handleClick( {del: title}, deleteArticle)}>Edit</button> : ""}
+            {user.openid && user?.openid?.name === name ?
+                <div>
+                <button onClick={(event) => saveClick(title)}>Save</button>
+                <button onClick={(event) => deleteClick(title)}>Delete</button>
+                </div>
+            : ""}
         </div>
     );
 }
 
 
 export function ListArticles({user}) {
-    const {listArticles} = useContext(ArticlesApiContext);
     const [category, setCategory] = useState("");
     const [categoryQuery, setCategoryQuery] = useState("");
-    const {loading, error, data} = useLoading(
-        async () => await listArticles({category: category}),
-        [category]
-    );
+    const [ws, setWs] = useState();
+
 
     function handleSubmitQuery(e) {
         e.preventDefault();
         setCategory(categoryQuery);
     }
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-    if (error) {
-        return (
-            <div>
-                <h1>Error</h1>
-                <div id="error-text">{error.toString()}</div>
-            </div>
-        );
-    }
+    const [articles, setArticles] = useState("");
+    useEffect(() => {
+        const ws = new WebSocket(window.location.origin.replace(/^http/, "ws"));
+
+        ws.onopen = () => {
+            ws.send(JSON.stringify({category: categoryQuery}))
+        }
+
+        ws.onmessage = (event) => {
+
+            setArticles("")
+
+            console.log("onmessage")
+
+            let data = JSON.parse(event.data);
+            data.forEach((article) => {
+                const {name, title, content, date, category} = article
+                setArticles((articles) => [...articles, {name, title, content, date, category}]);
+            })
+
+        };
+        setWs(ws)
+    }, [category]);
+
 
     return (
         <div>
-            <h1>Articles</h1>
+            <h2>Articles</h2>
 
             <div>
                 <form onSubmit={handleSubmitQuery}>
@@ -72,8 +98,8 @@ export function ListArticles({user}) {
                     </label>
                 </form>
             </div>
-            {data.map((article) => (
-                <Article key={article.title} article={article} user={user} />
+            {Object.keys(articles).map((keyName, i) => (
+                <Article key={articles[keyName].title} article={articles[keyName]} user={user} ws={ws}/>
             ))}
         </div>
     );

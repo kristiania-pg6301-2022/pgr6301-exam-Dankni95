@@ -5,8 +5,8 @@ import { Simulate } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { ArticlesApiContext } from "../articlesApiContext.jsx";
 
-describe("add movie component", () => {
-  it("shows movies form", () => {
+describe("add article component", () => {
+  it("shows article form", () => {
     const element = document.createElement("div");
     ReactDOM.render(
       <MemoryRouter>
@@ -19,33 +19,40 @@ describe("add movie component", () => {
       Array.from(element.querySelectorAll("form label strong")).map(
         (e) => e.innerHTML
       )
-    ).toEqual(["Title:", "Year:", "Country:", "Plot:"]);
+    ).toEqual(["Title:", "Content:"]);
   });
 
-  it("adds movie on submit", () => {
-    const createMovie = jest.fn();
-    const title = "Test movie";
+  it("adds article on submit", () => {
+    const createArticle = jest.fn();
+    const title = "Test title";
+    const content = "test content"
+    const category = "Politics"
+    const date = Date.toLocaleString()
+
+
+    const user = {openid: {name : "Danny"}}
+
+
     const element = document.createElement("div");
     ReactDOM.render(
-      <ArticlesApiContext.Provider value={{ createMovie }}>
+      <ArticlesApiContext.Provider value={{ createArticle }}>
         <MemoryRouter>
-          <AddNewArticle />
+          <AddNewArticle user={user} />
         </MemoryRouter>
       </ArticlesApiContext.Provider>,
       element
     );
     Simulate.change(element.querySelector(".form-input input"), {
-      target: { value: title },
+      target: { title: title },
     });
-    Simulate.change(element.querySelector(".form-input:nth-of-type(2) input"), {
-      target: { value: "2022" },
-    });
+
     Simulate.submit(element.querySelector("form"));
-    expect(createMovie).toBeCalledWith({
+    expect(createArticle).toBeCalledWith({
       title,
-      country: "",
-      year: 2022,
-      plot: "",
+      content,
+      category,
+      date,
+      user
     });
   });
 });
