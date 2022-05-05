@@ -37,12 +37,27 @@ export function ArticlesApi(mongoDatabase, sockets) {
             mongoDatabase
                 .collection("articles")
                 .insertOne({title, date, category, content, name});
+
             res.sendStatus(200);
 
-            const article = {title, date, category, content, name}
+            let item = mongoDatabase
+                .collection("articles")
+                .find({})
+                .sort({metacritic: -1})
+                .map(({title, date, content, category, name}) => ({
+                    title,
+                    date,
+                    content,
+                    category,
+                    name
+                }))
+                .limit(100)
+                .toArray()
+
+
 
             for (const recipient of sockets) {
-                recipient.send(JSON.stringify(article));
+                recipient.send(JSON.stringify(item));
             }
         }
     });
