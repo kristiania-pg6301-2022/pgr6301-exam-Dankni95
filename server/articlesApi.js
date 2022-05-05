@@ -18,7 +18,6 @@ export function ArticlesApi(mongoDatabase, sockets) {
         }
 
         function validateValue(body) {
-            console.log("this "+Object.values(body).every(value => value !== null))
             // still fails
             return !Object.values(body).every(value => value !== null)
         }
@@ -40,7 +39,7 @@ export function ArticlesApi(mongoDatabase, sockets) {
 
             res.sendStatus(200);
 
-            let item = mongoDatabase
+            let item = await mongoDatabase
                 .collection("articles")
                 .find({})
                 .sort({metacritic: -1})
@@ -55,9 +54,8 @@ export function ArticlesApi(mongoDatabase, sockets) {
                 .toArray()
 
 
-
             for (const recipient of sockets) {
-                recipient.send(JSON.stringify(item));
+                recipient.send(JSON.stringify(item))
             }
         }
     });

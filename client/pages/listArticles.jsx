@@ -1,9 +1,8 @@
-import React, {useContext, useState, useEffect} from "react";
-
+import React, {useState, useEffect} from "react";
+import {Card, Button, CardActions, CardContent, Typography} from "@mui/material";
 
 function Article({article: {title, date, category, content, name}, user, ws}) {
     const [newTitle, setTitle] = useState("");
-
 
 
     function handleInputChange(e) {
@@ -12,36 +11,46 @@ function Article({article: {title, date, category, content, name}, user, ws}) {
     }
 
     async function saveClick(title) {
-              ws.send(JSON.stringify({title: title, newTitle: newTitle}))
+        ws.send(JSON.stringify({title: title, newTitle: newTitle}))
     }
 
     function deleteClick(title) {
-            ws.send(JSON.stringify({deleteArticle: title}))
+        ws.send(JSON.stringify({deleteArticle: title}))
     }
 
     return (
-        <div>
-            <h6>{category}</h6>
-            <div>{user.openid && user?.openid?.name === name ?
-                <input type='text' onChange={(e) => {
-                    handleInputChange(e)
-                }} defaultValue={title}/> : <h1>{title}</h1>}
-            </div>
-            <h6>{date}</h6>
-            {user?.google || user?.openid ? <h4>{content}</h4> : "Sign in to read the article"}
+        <Card style={{marginTop: "20px"}} >
+            <CardContent >
+                <h6>{category}</h6>
+                <h6>{date}</h6>
+
+                <Typography gutterBottom variant="h5" component="div">
+                    {user.openid && user?.openid?.name === name ?
+                        <input type='text' onChange={(e) => {
+                            handleInputChange(e)
+                        }} defaultValue={title}/> : <h1>{title}</h1>}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    {user?.google || user?.openid ? <h4>{content}</h4> : "Sign in to read the article"}
+                </Typography>
+            </CardContent>
             <h6>By: {name}</h6>
-            {user.openid && user?.openid?.name === name ?
-                <div>
-                <button onClick={(event) => saveClick(title)}>Save</button>
-                <button onClick={(event) => deleteClick(title)}>Delete</button>
-                </div>
-            : ""}
-        </div>
+            <CardActions>
+                {user.openid && user?.openid?.name === name ?
+                    <>
+                        <Button onClick={() => saveClick(title)}>Save</Button>
+                        <Button onClick={() => deleteClick(title)}>Delete</Button>
+                    </>
+                    : ""}
+            </CardActions>
+        </Card>
     );
+
+
 }
 
 
-export function ListArticles({user}) {
+export function ListArticles({user, socket}) {
     const [category, setCategory] = useState("");
     const [categoryQuery, setCategoryQuery] = useState("");
     const [ws, setWs] = useState();
@@ -54,34 +63,33 @@ export function ListArticles({user}) {
 
     const [articles, setArticles] = useState("");
     useEffect(() => {
-        const ws = new WebSocket(window.location.origin.replace(/^http/, "ws"));
 
-        ws.onopen = () => {
-            ws.send(JSON.stringify({category: categoryQuery}))
+        socket.onopen = () => {
+            socket.send(JSON.stringify({category: categoryQuery}))
         }
 
-        ws.onmessage = (event) => {
+        socket.onmessage = (event) => {
 
             setArticles("")
 
             console.log("onmessage")
 
             let data = JSON.parse(event.data);
-            data.forEach((article) => {
+            let reversed = data.reverse()
+            reversed.forEach((article) => {
                 const {name, title, content, date, category} = article
                 setArticles((articles) => [...articles, {name, title, content, date, category}]);
             })
-
         };
-        setWs(ws)
+        setWs(socket)
     }, [category]);
 
 
     return (
-        <div>
+        <div >
             <h2>Articles</h2>
 
-            <div>
+            <div >
                 <form onSubmit={handleSubmitQuery}>
                     <label>
                         Category:
@@ -99,7 +107,7 @@ export function ListArticles({user}) {
                 </form>
             </div>
             {Object.keys(articles).map((keyName, i) => (
-                <Article key={articles[keyName].title} article={articles[keyName]} user={user} ws={ws}/>
+                <Article  key={articles[keyName].title} article={articles[keyName]} user={user} ws={ws}/>
             ))}
         </div>
     );

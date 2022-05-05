@@ -13,6 +13,8 @@ header {
 .left-side {
   grid-column: 1 / 1;
   background-color: paleturquoise;
+  padding: 2rem;
+
 }
 
 main {
