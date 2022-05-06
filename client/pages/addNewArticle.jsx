@@ -22,11 +22,11 @@ export function AddNewArticle({user}) {
         <form onSubmit={handleSubmit}>
             <h1>Add new article</h1>
 
-            <FormInput label={"Title:"} value={title} onChangeValue={setTitle}/>
+            <FormInput className="title" label={"Title:"} value={title} onChangeValue={setTitle}/>
             <FormTextOptions label={"Category: "} value={category} onChangeValue={setCategory}/>
             <FormTextArea label={"Content:"} value={content} onChangeValue={setContent}/>
             <div>
-                <button>Submit</button>
+                <button className={"submit"}>Submit</button>
             </div>
         </form>
     );

@@ -56,7 +56,13 @@ export function Application() {
     }
 
     function PrivateRoute({children}) {
-        return isAuthed().auth.openid ? children : (<Navigate to="/login"/>)
+          return isAuthed().auth.google ? (
+            children
+        ) : isAuthed().auth.openid ? (
+            children
+        ) : (
+            <Navigate to="/login" />
+        )
     }
 
 

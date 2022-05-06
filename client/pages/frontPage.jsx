@@ -13,7 +13,7 @@ export function FrontPage({user}) {
     return (
         <>
             <div className="left-side"><Sidebar  socket={ws}/></div>
-            <main  style={{ padding: "1rem 1rem 1rem 1rem", width:"98%" }} className="main"><ListArticles user={user} socket={ws} /></main>
+            <main  style={{ padding: "1rem 1rem 1rem 1rem", width:"98%" }} className="main"><ListArticles user={user} ws={ws} /></main>
             <footer className="section coral">© 2022 Kristiania Avis</footer>
         </>
     )

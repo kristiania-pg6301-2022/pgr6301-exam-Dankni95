@@ -17,14 +17,15 @@ export function ArticlesApi(mongoDatabase, sockets) {
             return exists.length > 0
         }
 
-        function validateValue(body) {
-            // still fails
-            return !Object.values(body).every(value => value !== null)
+        function validateValue(title, content) {
+            if (title === ""|| title === undefined) return true
+            else return content === "" || content === undefined;
         }
 
         let {title, date, category, content, name} = req.body;
 
-        let hasNullValues = validateValue(req.body)
+
+        let hasNullValues = validateValue(title, content)
 
         let exists = await titleExists(title)
 
@@ -37,7 +38,6 @@ export function ArticlesApi(mongoDatabase, sockets) {
                 .collection("articles")
                 .insertOne({title, date, category, content, name});
 
-            res.sendStatus(200);
 
             let item = await mongoDatabase
                 .collection("articles")
@@ -52,6 +52,8 @@ export function ArticlesApi(mongoDatabase, sockets) {
                 }))
                 .limit(100)
                 .toArray()
+                res.json(item)
+
 
 
             for (const recipient of sockets) {

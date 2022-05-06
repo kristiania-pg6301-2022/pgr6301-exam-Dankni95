@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ListMovies component shows loading screen 1`] = `"<div><h1>Articles</h1><div><form><label>Category:<select name=\\"Category\\"><option value=\\"\\">All</option><option value=\\"Politics\\">Politics</option><option value=\\"Economics\\">Economics</option><option value=\\"Sport\\">Sport</option><option value=\\"Health\\">Health</option></select><button>Select</button></label></form></div></div>"`;
+exports[`listArticles component shows error message 1`] = `"<div><h1>Error</h1><div id=\\"error-text\\">Error: Something went wrong</div></div>"`;
+
+exports[`listArticles component shows loading screen 1`] = `"<div>Loading...</div>"`;

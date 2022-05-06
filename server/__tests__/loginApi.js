@@ -40,6 +40,7 @@ describe("login api", () => {
         ).body.config.openid.client_id
     ).toContain(process.env.IDPORTEN_CLIENT_ID)
   })
+
 })
 
 

@@ -4,7 +4,7 @@ export function FormInput({label, value, onChangeValue}) {
     return (
         <div className="form-input">
             <label>
-                <strong>{label}</strong>{" "}
+                <strong>{label}</strong>
                 <input value={value} onChange={(e) => onChangeValue(e.target.value)}/>
             </label>
         </div>
@@ -13,7 +13,7 @@ export function FormInput({label, value, onChangeValue}) {
 
 export function FormTextArea({label, value, onChangeValue}) {
     return (
-        <div className="form-input">
+        <div className="form-text-input">
             <label>
                 <strong>{label}</strong>{" "}
                 <textarea value={value} onChange={(e) => onChangeValue(e.target.value)}/>
