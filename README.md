@@ -1,6 +1,7 @@
 # PG6301 eksamen Kristiania Avis
 
-[Link til Heroku](https://pg6301-eksamen.herokuapp.com)
+- [Link til Heroku](https://pg6301-eksamen.herokuapp.com)
+- [Link til Github Repo](https://github.com/kristiania-pg6301-2022/pgr6301-exam-Dankni95)
 
 
 
