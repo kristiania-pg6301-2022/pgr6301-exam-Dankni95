@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:client && npm run test:server",
+    "test:verify:server": "cd server && npm test -- --detectOpenHandles",
+    "test:verify:client": "cd client && npm test -- --detectOpenHandles",
     "test:coverage": "npm run test:client:coverage && npm run test:server:coverage",
     "test:client": "cd client && npm test",
     "test:client:coverage": "cd client && npm test -- --collectCoverage",
