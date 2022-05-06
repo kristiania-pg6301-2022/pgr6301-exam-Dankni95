@@ -15,13 +15,21 @@ const mongoClient = new MongoClient(process.env.MONGODB_URL)
 const server = new WS("ws://localhost:1234");
 const client = new WebSocket("ws://localhost:1234");
 
-afterAll(() => {
-    mongoClient.close()
-    client.close()
-    server.close()
-})
 
 describe("article api", () => {
+
+
+    afterAll(async () => {
+        await mongoClient.close()
+        client.close()
+        server.close()
+    })
+
+    beforeEach(async () => {
+        const db = await mongoClient.connect()
+        await db.db("test_database").collection("articles").deleteMany({})
+    });
+
     it("adds a new article", async () => {
         const title = "My Test article"
         const content = "my content"
@@ -30,8 +38,7 @@ describe("article api", () => {
         const date = new Date().toLocaleDateString()
 
         await mongoClient.connect()
-        const database = mongoClient.db("test_database")
-        await database.collection("articles").deleteMany({})
+        const database = await mongoClient.db("test_database")
 
 
         await server.connected;
@@ -57,7 +64,7 @@ describe("article api", () => {
         const date = new Date().toLocaleDateString()
 
         await mongoClient.connect()
-        const database = mongoClient.db("test_database")
+        const database = await mongoClient.db("test_database")
 
 
         await server.connected;
@@ -68,9 +75,12 @@ describe("article api", () => {
 
         app.use("/api/articles", ArticlesApi(database, socket))
 
-     
+        //insert data
+        await request(app).post("/api/articles").send({title, content, category, name, date}).expect(200)
+
+
+        //use data
         await request(app).post("/api/articles").send({title, content, category, name, date}).expect(400)
-        await database.collection("articles").deleteMany({})
 
     })
 
@@ -93,9 +103,7 @@ describe("article api", () => {
         socket.push(client)
 
         app.use("/api/articles", ArticlesApi(database, socket))
-                await request(app).post("/api/articles").send({title, content, category, name, date}).expect(400)
-        await database.collection("articles").deleteMany({})
-
+        await request(app).post("/api/articles").send({title, content, category, name, date}).expect(400)
     })
 })
 
