@@ -10,7 +10,7 @@
 * [x] Lage en app med parcel, express, concurrently, prettier, Jest
 *  implementert!
 * [x] Sette opp en fungerende React app med React Router, håndtering av loading state og feilhåndtering
-*  implementert, men ved bruk av avansert Web Socket kommunikasjon er ikke loading state til stedet for listing av artikler. Den finnes på login / delvis på lagring av artikler.
+*  implementert, men ved bruk av "avansert" Web Socket kommunikasjon er ikke loading state til stedet for listing av artikler. Den finnes på login / delvis på lagring av artikler.
 * [x] Sette opp en fungerende Express app inkludert Routes i egen fil
 *  implementert!
 * [x] Kommunikasjon mellom klient og server med GET og POST inkludert feilhåndtering
