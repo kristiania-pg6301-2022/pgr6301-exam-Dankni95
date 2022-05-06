@@ -1,7 +1,7 @@
 # PG6301 eksamen Kristiania Avis
 
 [Link til Heroku](https://pg6301-eksamen.herokuapp.com)
-[Test rapport](link til testrapport)
+
 
 
 
@@ -46,3 +46,9 @@ på skolens AD ( domain_hint=egms.no )
 * Ikke alle feil blir håndtert med visning, jeg fikk ikke nok tid til å implementere Web Sockets med loading state/context.
  
 - Alle må krav er implementert
+ 
+ - Ingen flere timer igjen på Github Actions:
+ ![image](https://user-images.githubusercontent.com/71786017/167055157-b6a11608-02e6-4502-9039-e5f6794111f9.png)
+ ![image](https://user-images.githubusercontent.com/71786017/167055357-ee4d6a2c-c85f-4f03-9af2-717f0735d7d9.png)
+
+
