@@ -1,66 +1,57 @@
-import {Router} from "express";
+import { Router } from "express";
 
 export function ArticlesApi(mongoDatabase, sockets) {
+  const router = new Router();
 
-    const router = new Router();
+  router.post("/", async (req, res) => {
+    async function titleExists(title) {
+      const db = mongoDatabase.collection("articles");
 
+      const exists = await db.find({ title: title.toString() }).toArray();
 
-    router.post("/", async (req, res) => {
+      return exists.length > 0;
+    }
 
-        async function titleExists(title) {
-            const db = mongoDatabase
-                .collection("articles")
+    function validateValue(title, content) {
+      if (title === "" || title === undefined) return true;
+      else return content === "" || content === undefined;
+    }
 
-            const exists = await db.find({title: title.toString()})
-                .toArray()
+    let { title, date, category, content, name } = req.body;
 
-            return exists.length > 0
-        }
+    let hasNullValues = validateValue(title, content);
 
-        function validateValue(title, content) {
-            if (title === ""|| title === undefined) return true
-            else return content === "" || content === undefined;
-        }
+    let exists = await titleExists(title);
 
-        let {title, date, category, content, name} = req.body;
+    if (exists || hasNullValues) {
+      res.sendStatus(400);
+    } else {
+      category = [category.toLowerCase()];
 
+      mongoDatabase
+        .collection("articles")
+        .insertOne({ title, date, category, content, name });
 
-        let hasNullValues = validateValue(title, content)
+      let item = await mongoDatabase
+        .collection("articles")
+        .find({})
+        .sort({ metacritic: -1 })
+        .map(({ title, date, content, category, name }) => ({
+          title,
+          date,
+          content,
+          category,
+          name,
+        }))
+        .limit(100)
+        .toArray();
+      res.json(item);
 
-        let exists = await titleExists(title)
+      for (const recipient of sockets) {
+        recipient.send(JSON.stringify(item));
+      }
+    }
+  });
 
-        if (exists || hasNullValues) {
-            res.sendStatus(400)
-        } else {
-            category = [category.toLowerCase()];
-
-            mongoDatabase
-                .collection("articles")
-                .insertOne({title, date, category, content, name});
-
-
-            let item = await mongoDatabase
-                .collection("articles")
-                .find({})
-                .sort({metacritic: -1})
-                .map(({title, date, content, category, name}) => ({
-                    title,
-                    date,
-                    content,
-                    category,
-                    name
-                }))
-                .limit(100)
-                .toArray()
-                res.json(item)
-
-
-
-            for (const recipient of sockets) {
-                recipient.send(JSON.stringify(item))
-            }
-        }
-    });
-
-    return router;
+  return router;
 }

@@ -1,73 +1,67 @@
-import React, { useContext, useEffect, useState } from "react"
-import {
-  Route,
-  Routes,
-  useNavigate,
-  useParams,
-} from "react-router-dom"
-import { ArticlesApiContext } from "../articlesApiContext.jsx"
-import { randomString } from "../lib/randomString"
-import { sha256 } from "../lib/sha256"
+import React, { useContext, useEffect, useState } from "react";
+import { Route, Routes, useNavigate, useParams } from "react-router-dom";
+import { ArticlesApiContext } from "../articlesApiContext.jsx";
+import { randomString } from "../lib/randomString";
+import { sha256 } from "../lib/sha256";
 
 export function LoginCallback({ reload, config }) {
-  const { provider } = useParams()
-  const [error, setError] = useState()
-  const navigate = useNavigate()
-  const { registerLogin } = useContext(ArticlesApiContext)
-
-
+  const { provider } = useParams();
+  const [error, setError] = useState();
+  const navigate = useNavigate();
+  const { registerLogin } = useContext(ArticlesApiContext);
 
   useEffect(async () => {
-
     const { access_token, error, error_description, state, code } =
-      Object.fromEntries(new URLSearchParams(window.location.hash.substring(1)))
+      Object.fromEntries(
+        new URLSearchParams(window.location.hash.substring(1))
+      );
 
-    const expected_state = window.sessionStorage.getItem("expected_state")
+    const expected_state = window.sessionStorage.getItem("expected_state");
     if (!state || expected_state !== state) {
-      setError("Unexpected state")
-      return
+      setError("Unexpected state");
+      return;
     }
 
     if (error || error_description) {
-      setError(`Error: ${error} (${error_description})`)
-      return
+      setError(`Error: ${error} (${error_description})`);
+      return;
     }
 
     if (code) {
-      const { client_id, token_endpoint } = config[provider]
-      const code_verifier = window.sessionStorage.getItem("code_verifier")
+      const { client_id, token_endpoint } = config[provider];
+      const code_verifier = window.sessionStorage.getItem("code_verifier");
       const payload = {
         grant_type: "authorization_code",
         code,
         client_id,
         code_verifier,
         redirect_uri: `${window.location.origin}/login/${provider}/callback`,
-      }
+      };
       const res = await fetch(token_endpoint, {
         method: "POST",
         body: new URLSearchParams(payload),
-      })
+      });
       if (!res.ok) {
-        setError(`Failed to fetch token ${res.status}: ${await res.text()}`)
-        return
+        setError(`Failed to fetch token ${res.status}: ${await res.text()}`);
+        return;
       }
-      const { access_token } = await res.json()
-      await registerLogin(provider, { access_token })
-      reload()
-      navigate("/")
-      return
+      const { access_token } = await res.json();
+      await registerLogin(provider, { access_token });
+      reload();
+      navigate("/");
+      return;
     }
 
     if (!access_token) {
-      setError("Missing access_token")
-      return
+      setError("Missing access_token");
+      return;
     }
 
-    await registerLogin(provider, { access_token })
+    await registerLogin(provider, { access_token });
 
-    reload()
-    navigate("/")
-  }, [])
+    reload();
+    navigate("/");
+  }, []);
 
   if (error) {
     return (
@@ -75,23 +69,21 @@ export function LoginCallback({ reload, config }) {
         <h1>Error</h1>
         <div>{error.toString()}</div>
       </div>
-    )
+    );
   }
 
-  return <h1>Please wait...</h1>
+  return <h1>Please wait...</h1>;
 }
 
- 
-
 export function EndSession({ reload }) {
-  const navigate = useNavigate()
-  const { endSession } = useContext(ArticlesApiContext)
+  const navigate = useNavigate();
+  const { endSession } = useContext(ArticlesApiContext);
   useEffect(async () => {
-    await endSession()
-    reload()
-    navigate("/")
-  })
-  return <h1>Please wait...</h1>
+    await endSession();
+    reload();
+    navigate("/");
+  });
+  return <h1>Please wait...</h1>;
 }
 
 function LoginButton({ config, label, provider }) {
@@ -102,10 +94,10 @@ function LoginButton({ config, label, provider }) {
       scope,
       client_id,
       code_challenge_method,
-    } = config[provider]
+    } = config[provider];
 
-    const state = randomString(50)
-    window.sessionStorage.setItem("expected_state", state)
+    const state = randomString(50);
+    window.sessionStorage.setItem("expected_state", state);
 
     const parameters = {
       response_type,
@@ -114,25 +106,25 @@ function LoginButton({ config, label, provider }) {
       state,
       scope,
       redirect_uri: `${window.location.origin}/login/${provider}/callback`,
-      domain_hint: "egms.no"
-    }
+      domain_hint: "egms.no",
+    };
 
     if (code_challenge_method) {
-      const code_verifier = randomString(50)
-      window.sessionStorage.setItem("code_verifier", code_verifier)
-      parameters.code_challenge_method = code_challenge_method
-      parameters.code_challenge = await sha256(code_verifier)
+      const code_verifier = randomString(50);
+      window.sessionStorage.setItem("code_verifier", code_verifier);
+      parameters.code_challenge_method = code_challenge_method;
+      parameters.code_challenge = await sha256(code_verifier);
     }
 
     window.location.href =
-      authorization_endpoint + "?" + new URLSearchParams(parameters)
+      authorization_endpoint + "?" + new URLSearchParams(parameters);
   }
 
   return (
     <div>
       <button onClick={handleLogin}>{label}</button>
     </div>
-  )
+  );
 }
 
 function StartLogin({ config }) {
@@ -150,7 +142,7 @@ function StartLogin({ config }) {
         provider={"openid"}
       />
     </div>
-  )
+  );
 }
 
 export function LoginPage({ config, reload }) {
@@ -164,5 +156,5 @@ export function LoginPage({ config, reload }) {
       <Route path={"/endsession"} element={<EndSession reload={reload} />} />
       <Route path={"*"} element={<StartLogin config={config} />} />
     </Routes>
-  )
+  );
 }

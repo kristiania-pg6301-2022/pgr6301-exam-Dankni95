@@ -17,24 +17,24 @@ describe("login page", () => {
 
     const domElement = document.createElement("div");
     ReactDOM.render(
-        <MemoryRouter>
-          <LoginPage
-              config={{
-                google: { authorization_endpoint, client_id },
-              }}
-          />
-        </MemoryRouter>,
-        domElement
+      <MemoryRouter>
+        <LoginPage
+          config={{
+            google: { authorization_endpoint, client_id },
+          }}
+        />
+      </MemoryRouter>,
+      domElement
     );
     await act(async () => {
       await Simulate.click(domElement.querySelector("button"));
     });
     const redirect_uri = `${location.origin}/login/google/callback`;
     expect(window.location.origin + window.location.pathname).toEqual(
-        authorization_endpoint
+      authorization_endpoint
     );
     const params = Object.fromEntries(
-        new URLSearchParams(window.location.search.substring(1))
+      new URLSearchParams(window.location.search.substring(1))
     );
     expect(params).toMatchObject({ client_id, redirect_uri });
   });
@@ -44,7 +44,7 @@ describe("login page", () => {
     // replace window.location to simulate returning
     const access_token = `abc`;
     const location = new URL(
-        `https://www.example.com#access_token=${access_token}&state=test`
+      `https://www.example.com#access_token=${access_token}&state=test`
     );
     delete window.location;
     window.location = new URL(location);
@@ -54,12 +54,12 @@ describe("login page", () => {
     const reload = jest.fn();
     act(() => {
       ReactDOM.render(
-          <MemoryRouter initialEntries={["/google/callback"]}>
-            <ArticlesApiContext.Provider value={{ registerLogin }}>
-              <LoginPage reload={reload} />
-            </ArticlesApiContext.Provider>
-          </MemoryRouter>,
-          domElement
+        <MemoryRouter initialEntries={["/google/callback"]}>
+          <ArticlesApiContext.Provider value={{ registerLogin }}>
+            <LoginPage reload={reload} />
+          </ArticlesApiContext.Provider>
+        </MemoryRouter>,
+        domElement
       );
     });
     expect(registerLogin).toBeCalledWith("google", { access_token });

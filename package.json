@@ -19,7 +19,9 @@
     "start": "cd server && npm start",
     "postinstall": "npm run install:client && npm run install:server",
     "install:client": "cd client && npm install --include=dev",
-    "install:server": "cd server && npm install"
+    "install:server": "cd server && npm install",
+    "verify": "npm run format:check",
+    "format:check": "prettier --check **/*.{js,jsx}"
   },
   "repository": {
     "type": "git",

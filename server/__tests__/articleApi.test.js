@@ -18,7 +18,6 @@ const client = new WebSocket("ws://localhost:1234");
 
 describe("article api", () => {
 
-
     afterAll(async () => {
         await mongoClient.close()
         client.close()
@@ -28,6 +27,7 @@ describe("article api", () => {
     beforeEach(async () => {
         const db = await mongoClient.connect()
         await db.db("test_database").collection("articles").deleteMany({})
+        await db.close()
     });
 
     it("adds a new article", async () => {
@@ -38,7 +38,6 @@ describe("article api", () => {
         const date = new Date().toLocaleDateString()
 
         await mongoClient.connect()
-        const database = await mongoClient.db("test_database")
 
 
         await server.connected;
@@ -47,7 +46,10 @@ describe("article api", () => {
 
         socket.push(client)
 
-        app.use("/api/articles", ArticlesApi(database, socket))
+        const db = await mongoClient.db("test_database")
+
+
+        app.use("/api/articles", ArticlesApi(await db, socket))
 
         expect(
             (
@@ -63,17 +65,15 @@ describe("article api", () => {
         const category = "Politics"
         const date = new Date().toLocaleDateString()
 
+        await server.connected;
+        let socket = []
+        socket.push(client)
+
+
         await mongoClient.connect()
         const database = await mongoClient.db("test_database")
 
-
-        await server.connected;
-
-        let socket = []
-
-        socket.push(client)
-
-        app.use("/api/articles", ArticlesApi(database, socket))
+        app.use("/api/articles", ArticlesApi(await database, socket))
 
         //insert data
         await request(app).post("/api/articles").send({title, content, category, name, date}).expect(200)
@@ -92,17 +92,14 @@ describe("article api", () => {
         const date = new Date().toLocaleDateString()
 
         await mongoClient.connect()
-        const database = mongoClient.db("test_database")
-        await database.collection("articles").deleteMany({})
-
-
         await server.connected;
 
         let socket = []
 
         socket.push(client)
+        const db = await mongoClient.db("test_database")
 
-        app.use("/api/articles", ArticlesApi(database, socket))
+        app.use("/api/articles", ArticlesApi(await db, socket))
         await request(app).post("/api/articles").send({title, content, category, name, date}).expect(400)
     })
 })

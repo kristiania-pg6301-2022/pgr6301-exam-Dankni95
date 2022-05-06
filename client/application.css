@@ -1,49 +1,48 @@
 
 .parent {
-  display: grid;
-  grid-template: auto 1fr auto / auto 1fr auto;
-  grid-gap: 1rem;
+    display: grid;
+    grid-template: auto 1fr auto / auto 1fr auto;
+    grid-gap: 1rem;
 
 }
 
 header {
-  grid-column: 1 / 4;
+    grid-column: 1 / 4;
 }
 
 .left-side {
-  grid-column: 1 / 1;
-  background-color: paleturquoise;
-  padding: 2rem;
+    grid-column: 1 / 1;
+    background-color: paleturquoise;
+    padding: 2rem;
 
 }
 
 main {
-  grid-column: 2 / 4;
-  text-align: center;
-  background-color: paleturquoise;
-  padding-right: 10rem;
+    grid-column: 2 / 4;
+    text-align: center;
+    background-color: paleturquoise;
+    padding-right: 10rem;
 }
 
 
 footer {
-  grid-column: 1 / 4;
-  background-color: paleturquoise;
-  text-align: center;
+    grid-column: 1 / 4;
+    background-color: paleturquoise;
+    text-align: center;
 }
-
 
 
 header {
-  background-color: aliceblue;
-  padding: 0.0em 1em;
-  display: flex;
-  justify-content: space-between;
+    background-color: aliceblue;
+    padding: 0.0em 1em;
+    display: flex;
+    justify-content: space-between;
 }
 
 header > * {
-  padding-inline: 0.5em;
+    padding-inline: 0.5em;
 }
 
 header .menu-divider {
-  flex: 1;
+    flex: 1;
 }
